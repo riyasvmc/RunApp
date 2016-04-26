@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
-    <file url="file://$PROJECT_DIR$/app/src/main/java/com/kodewiz/run/GlobalVariables.java" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/com/kodewiz/run/OrderListAdapter.java" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/com/kodewiz/run/data/DBHelper.java" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/com/kodewiz/run/data/Data.java" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/com/kodewiz/run/data/MyContentProvider.java" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/com/kodewiz/run/data/Order.java" charset="windows-1252" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

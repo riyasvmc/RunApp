@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activity.MainActivity">
+    <item
+        android:id="@+id/action_generate_reciept"
+        android:orderInCategory="85"
+        android:title="Recipt"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_print_order"
+        android:orderInCategory="84"
+        android:title="Print"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_print_black_24dp"/>
+</menu>

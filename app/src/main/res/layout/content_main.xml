@@ -5,19 +5,80 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.kodewiz.run.MainActivity"
-    tools:showIn="@layout/activity_main">
-
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/registrationProgressBar"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
-    <ListView
-        android:id="@+id/listView"
+    tools:context=".activity.MainActivity"
+    tools:showIn="@layout/activity_main"
+    android:background="#f0c001">
+    <FrameLayout
+        android:id="@+id/frame_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"
+        android:background="@drawable/background">
+
+        <Button
+            android:id="@+id/button_retry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="Register on Server"
+            android:visibility="invisible"
+            android:layout_gravity="center"/>
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/registrationProgressBar"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone"
+            android:layout_gravity="center"/>
+
+            <LinearLayout
+                android:id="@+id/main_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="100dp">
+                <TextView
+                    android:id="@+id/total_amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="\u20B90"
+                    android:layout_marginTop="40dp"
+                    android:textColor="#ffffff"
+                    android:textStyle="bold"
+                    android:textSize="40dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#ababab"
+                    android:text="Total Amount"
+                    android:textSize="16dp"/>
+                <Button
+                    android:id="@+id/button_sync"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sync Database"
+                    android:onClick="onClick"
+                    android:layout_margin="15dp"/>
+                <android.support.v7.widget.CardView
+                    android:id="@+id/card_view_orders"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    android:foreground="?android:attr/selectableItemBackground">
+                    <com.kodewiz.run.view.TextView_roboto_regular
+                        android:id="@+id/textview_orders"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:text="0 Orders"
+                        android:textSize="20dp"
+                        android:layout_margin="16dp"/>
+                </android.support.v7.widget.CardView>
+            </LinearLayout>
+
+    </FrameLayout>
 </RelativeLayout>
 
 

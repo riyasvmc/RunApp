@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#00bcd4</color>
+    <color name="colorPrimaryDark">#008391</color>
+    <color name="colorAccent">#ff1744</color>
+    <color name="navigation">#0066ff</color>
+    <color name="red">#ff003b</color>
 
     <color name="blue_grey_500">#607D8B</color>
     <color name="blue_grey_600">#546E7A</color>
     <color name="blue_grey_700">#455A64</color>
     <color name="blue_grey_800">#37474F</color>
     <color name="blue_grey_900">#263238</color>
+
+    <color name="black_overlay">#66000000</color>
+
+    <!-- Progress Wheel Colors -->
+    <color name="pw_text_color">#000000</color>
+    <color name="pw_rim_color">#707070</color>
+    <color name="pw_bar_color">#9b001c</color>
+    <color name="foreground_material_light">#000000</color>
 </resources>

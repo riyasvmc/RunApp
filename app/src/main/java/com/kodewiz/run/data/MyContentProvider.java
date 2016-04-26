@@ -10,40 +10,61 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.text.TextUtils;
+import android.util.Log;
+
+import com.kodewiz.run.OrdersInsertHandler;
 
 public class MyContentProvider extends ContentProvider {
 
-    private DBHelper dbh;
+    private DBHelper mDBH;
 
     private static final String AUTHORITY = "com.kodewiz.run.provider";
-    private static final int ORDER_LIST = 1;
-    private static final int ORDER_ID = 2;
+    private static final int ORDERS_LIST = 3;
+    private static final int ORDERS_ID = 4;
+    private static final int CUSTOMERS_LIST = 5;
+    private static final int CUSTOMERS_ID = 6;
+    private static final int CUSTOMER_COUNT = 8;
+    private static final int TOTAL_AMOUNT = 7;
+    private static final int ORDER_COUNT = 9;
 
     private static final UriMatcher uriMatcher;
 
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(AUTHORITY, "orders", ORDER_LIST);
-        uriMatcher.addURI(AUTHORITY, "orders/#", ORDER_ID);
+        uriMatcher.addURI(AUTHORITY, "orders", ORDERS_LIST);
+        uriMatcher.addURI(AUTHORITY, "orders/#", ORDERS_ID);
+        uriMatcher.addURI(AUTHORITY, "customers", CUSTOMERS_LIST);
+        uriMatcher.addURI(AUTHORITY, "customers/#", CUSTOMERS_ID);
+        uriMatcher.addURI(AUTHORITY, "customer_count", CUSTOMER_COUNT);
+        uriMatcher.addURI(AUTHORITY, "amount", TOTAL_AMOUNT);
+        uriMatcher.addURI(AUTHORITY, "order", ORDER_COUNT);
 
     }
 
     @Override
     public String getType(Uri uri) {
         switch (uriMatcher.match(uri)){
-            case ORDER_LIST: return ContentResolver.CURSOR_DIR_BASE_TYPE+"/vnd.zeefive.orders";
-            case ORDER_ID: return ContentResolver.CURSOR_ITEM_BASE_TYPE+"/vnd.zeefive.orders";
+            case ORDERS_LIST: return ContentResolver.CURSOR_DIR_BASE_TYPE+"/vnd.zeefive.orders";
+            case ORDERS_ID: return ContentResolver.CURSOR_ITEM_BASE_TYPE+"/vnd.zeefive.orders";
+            case CUSTOMERS_LIST: return ContentResolver.CURSOR_DIR_BASE_TYPE+"/vnd.zeefive.customers";
+            case CUSTOMERS_ID: return ContentResolver.CURSOR_ITEM_BASE_TYPE+"/vnd.zeefive.customers";
+            case CUSTOMER_COUNT: return ContentResolver.CURSOR_DIR_BASE_TYPE+"/vnd.zeefive.customer_count";
+            case TOTAL_AMOUNT: return ContentResolver.CURSOR_DIR_BASE_TYPE+"/vnd.zeefive.amount";
+            case ORDER_COUNT: return ContentResolver.CURSOR_DIR_BASE_TYPE+"/vnd.zeefive.order";
             default: throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
     }
 
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
     public static final Uri ORDERS_CONTENT_URI = Uri.withAppendedPath(CONTENT_URI, "orders");
+    public static final Uri AMOUNT_CONTENT_URI = Uri.withAppendedPath(CONTENT_URI, "amount");
+    public static final Uri CUSTOMERS_CONTENT_URI = Uri.withAppendedPath(CONTENT_URI, "customers");
+    public static final Uri CUSTOMER_COUNT_CONTENT_URI = Uri.withAppendedPath(CONTENT_URI, "customer_count");
+    public static final Uri ORDER_CONTENT_URI = Uri.withAppendedPath(CONTENT_URI, "order");
 
     @Override
     public boolean onCreate() {
-        dbh = new DBHelper(getContext());
+        mDBH = new DBHelper(getContext());
         return true;
     }
 
@@ -51,17 +72,29 @@ public class MyContentProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
         // open a read-only database
-        SQLiteDatabase db = dbh.getWritableDatabase();
+        SQLiteDatabase db = mDBH.getWritableDatabase();
         String groupBy = null;
         String having = null;
+        String rowId;
 
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 
         switch (uriMatcher.match(uri)){
-            case ORDER_LIST: queryBuilder.setTables(DBHelper.ORDER_TABLE);
+            case ORDERS_LIST: queryBuilder.setTables(DBHelper.OrdersTable.TABLE_NAME);
                 break;
-            case ORDER_ID: String rowId = uri.getPathSegments().get(1);
-                queryBuilder.appendWhere(DBHelper.ID + "=" + rowId);
+            case ORDERS_ID: rowId = uri.getPathSegments().get(1);
+                queryBuilder.appendWhere(DBHelper.OrdersTable._ID + "=" + rowId);
+                break;
+            case CUSTOMERS_LIST: queryBuilder.setTables(DBHelper.OrdersTable.TABLE_NAME);
+                groupBy = DBHelper.OrdersTable.NAME;
+                break;
+            case TOTAL_AMOUNT: queryBuilder.setTables(DBHelper.OrdersTable.TABLE_NAME);
+                projection = new String[]{"GROUP_CONCAT(" + DBHelper.OrdersTable.PRICE + ") AS amount"};
+                break;
+            case CUSTOMER_COUNT: queryBuilder.setTables(DBHelper.OrdersTable.TABLE_NAME);
+                groupBy = DBHelper.OrdersTable.NAME;
+                break;
+            case ORDER_COUNT: queryBuilder.setTables(DBHelper.OrdersTable.TABLE_NAME);
                 break;
             default: break;
         }
@@ -73,9 +106,9 @@ public class MyContentProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        SQLiteDatabase db = dbh.getWritableDatabase();
-        if (uriMatcher.match(uri) == ORDER_LIST) {
-            long id = db.insert(DBHelper.ORDER_TABLE, null, values);
+        SQLiteDatabase db = mDBH.getWritableDatabase();
+        if (uriMatcher.match(uri) == ORDERS_LIST) {
+            long id = db.insertWithOnConflict(DBHelper.OrdersTable.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
             getContext().getContentResolver().notifyChange(uri, null);
             return getUriForId(id, uri);
         }else{
@@ -85,14 +118,14 @@ public class MyContentProvider extends ContentProvider {
 
     @Override
     public int bulkInsert(Uri uri, ContentValues[] values) {
-        if (uriMatcher.match(uri) != ORDER_LIST ) {
-            throw new IllegalArgumentException("Unsupported URI for insertion: " + uri);
-        }
-        SQLiteDatabase db = dbh.getWritableDatabase();
-        if(uriMatcher.match(uri) == ORDER_LIST){
-            return 0;
-        }else {
-            return -1;
+        SQLiteDatabase db = mDBH.getWritableDatabase();
+        switch (uriMatcher.match(uri)){
+            case ORDERS_LIST:
+                int mInsertCount = OrdersInsertHandler.insertOrdersToDatabase(db, values);
+                getContext().getContentResolver().notifyChange(uri, null);
+                return mInsertCount;
+            default:
+                throw new IllegalArgumentException("Illegal Uri Exception in MyContentProvider bulk insert method, " + uri.getPath());
         }
     }
 
@@ -108,10 +141,13 @@ public class MyContentProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        SQLiteDatabase db = dbh.getWritableDatabase();
+        SQLiteDatabase db = mDBH.getWritableDatabase();
         switch (uriMatcher.match(uri)){
-            case ORDER_ID: String rowId = uri.getPathSegments().get(1);
-                              selection = DBHelper.ID + "=" + rowId + (!TextUtils.isEmpty(selection) ? "AND (" + selection + ')' : "");
+            case ORDERS_LIST:
+                int deleteCount = db.delete(DBHelper.OrdersTable.TABLE_NAME, selection, selectionArgs);
+                Log.d("Riyas", deleteCount + " Rows Deleted!");
+                getContext().getContentResolver().notifyChange(uri, null);
+                return deleteCount;
             default: break;
         }
 
@@ -119,7 +155,7 @@ public class MyContentProvider extends ContentProvider {
             selection = "1";
         }
 
-        int deleteCount = db.delete(DBHelper.ORDER_TABLE, selection, selectionArgs);
+        int deleteCount = db.delete(DBHelper.OrdersTable.TABLE_NAME, selection, selectionArgs);
         getContext().getContentResolver().notifyChange(uri, null);
 
         return deleteCount;
@@ -127,12 +163,12 @@ public class MyContentProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        SQLiteDatabase db = dbh.getWritableDatabase();
+        SQLiteDatabase db = mDBH.getWritableDatabase();
         int updateCount = 0;
         switch (uriMatcher.match(uri)){
 
-            case ORDER_LIST:
-                updateCount = db.update(DBHelper.ORDER_TABLE, values, selection, selectionArgs);
+            case ORDERS_LIST:
+                updateCount = db.update(DBHelper.OrdersTable.TABLE_NAME, values, selection, selectionArgs);
                 getContext().getContentResolver().notifyChange(ORDERS_CONTENT_URI, null);
                 break;
             default:
