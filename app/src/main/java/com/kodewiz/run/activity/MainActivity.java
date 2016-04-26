@@ -18,7 +18,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -29,12 +28,10 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.kodewiz.run.QuickstartPreferences;
 import com.kodewiz.run.R;
 import com.kodewiz.run.SyncHelper;
 import com.kodewiz.run.Utilities;
 import com.kodewiz.run.data.MyContentProvider;
-import com.kodewiz.run.gcm.MyGcmListenerService;
 import com.kodewiz.run.gcm.RegistrationIntentService;
 
 import java.text.DecimalFormat;
@@ -42,11 +39,9 @@ import java.text.DecimalFormat;
 public class MainActivity extends ActivityCustom{
 
     // constants
+    public static final String REGISTRATION_COMPLETE = "registrationComplete";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     public static final int NOTIFICATION_ID = 0;
-    private static final String TAG = "MainActivity";
-    public static String COORDINATES_OFFICE = "12.910089, 77.635109";
-    public static String COORDINATES_SHOP = "12.906082,77.638439";
 
     // instances
     private Context mContext = this;
@@ -55,9 +50,7 @@ public class MainActivity extends ActivityCustom{
 
     // view instances
     private LinearLayout mLinearLayout;
-    private ActionBar mActionBar;
     private Button mButtonRetry;
-    private Button mButtonSync;
     private ProgressBar mRegistrationProgressBar;
     private static ProgressDialog mProgressDialog;
     private TextView mTotalAmount;
@@ -66,7 +59,6 @@ public class MainActivity extends ActivityCustom{
     private MyContentObserver mObserver;
 
     private double mLongTotalAmount;
-    private String mStringCustomerCount = "0";
     private String mStringOrderCount = "0";
 
     @Override
@@ -86,8 +78,6 @@ public class MainActivity extends ActivityCustom{
         };
 
         initViews();
-
-        // register app on GCM server
         registerAppOnGCMServer();
 
     }
@@ -96,11 +86,8 @@ public class MainActivity extends ActivityCustom{
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mActionBar = getSupportActionBar();
         mLinearLayout = (LinearLayout) findViewById(R.id.main_layout);
-        //mActionBar.hide();
         mButtonRetry = (Button) findViewById(R.id.button_retry);
-        mButtonSync = (Button) findViewById(R.id.button_sync);
         mRegistrationProgressBar = (ProgressBar) findViewById(R.id.registrationProgressBar);
     }
 
@@ -128,12 +115,6 @@ public class MainActivity extends ActivityCustom{
                     i++;
                 }
             }
-        }
-
-        c = getContentResolver().query(MyContentProvider.CUSTOMER_COUNT_CONTENT_URI, null, null, null, null);
-        while (c.moveToNext()){
-            String cc = String.valueOf(c.getCount());
-            mStringCustomerCount = (TextUtils.isEmpty(cc))? "0" : cc;
         }
 
         c = getContentResolver().query(MyContentProvider.ORDER_CONTENT_URI, null, null, null, null);
@@ -172,7 +153,7 @@ public class MainActivity extends ActivityCustom{
         updateUI();
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-                new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
+                new IntentFilter(MainActivity.REGISTRATION_COMPLETE));
 
         // register content observer
         mObserver = new MyContentObserver(new Handler());
@@ -222,7 +203,7 @@ public class MainActivity extends ActivityCustom{
         mButtonRetry.setVisibility(View.GONE);
         mRegistrationProgressBar.setVisibility(View.VISIBLE);
 
-        boolean isRegistrationComplete = sharedPreferences.getBoolean(QuickstartPreferences.REGISTRATION_COMPLETE, false);
+        boolean isRegistrationComplete = sharedPreferences.getBoolean(MainActivity.REGISTRATION_COMPLETE, false);
 
         // check weather the app is registered with GCM Server
         if(!isRegistrationComplete){
