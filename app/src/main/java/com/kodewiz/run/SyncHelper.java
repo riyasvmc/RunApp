@@ -23,9 +23,6 @@ import org.json.JSONObject;
 
 import hugo.weaving.DebugLog;
 
-/**
- * Created by Riyas V on 2/21/2016.
- */
 public class SyncHelper {
 
     public static void syncWithChickenAtDoorDatabase(final Context context) {
@@ -35,17 +32,12 @@ public class SyncHelper {
             @DebugLog
             @Override
             public void onResponse(JSONObject response) {
-
-                // put data to DB
                 JSONArray array = response.optJSONArray("orders");
-
-                // Add data to DB
                 ContentValues[] values = OrdersInsertHandler.convertArrayToContentValues(array);
                 if(values != null){
                     int mInsertCount = context.getContentResolver().bulkInsert(MyContentProvider.ORDERS_CONTENT_URI, values);
                 }
 
-                // Delete data from DB
                 String mIdsToRetain = response.optString("ids");
                 deleteRowsExcludingTheIds(context, mIdsToRetain);
                 MainActivity.dismissDialog();
@@ -85,7 +77,6 @@ public class SyncHelper {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.d("Riyas", "JSON object after created: " + mJsonIDs.toString());
         return mJsonIDs;
     }
 }

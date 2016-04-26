@@ -1,6 +1,7 @@
 /*
 package com.kodewiz.run;
 
+
 */
 /**
  * ESC/POS library for communicating with thermal printers
@@ -28,8 +29,10 @@ package com.kodewiz.run;
  *//*
 
 
+
 import java.io.IOException;
 import java.io.OutputStream;
+
 
 */
 /**
@@ -51,22 +54,22 @@ import java.io.OutputStream;
  *//*
 
 
+
 public class ESCPos {
 
     OutputStream mOutputStream;  // Create object from Serial class
 
-    */
+
+*/
 /**
      * a Constructor, usually called in the setup() method in your sketch to
      * initialize and start the library.
      *
      * @example Hello
-     * @param theParent
      *//*
 
-    public ESCPos(OutputStream thisPort) {
-        welcome();
 
+    public ESCPos(OutputStream thisPort) {
         this.mOutputStream = thisPort;
     }
 
@@ -82,34 +85,40 @@ public class ESCPos {
         System.out.println("Hello World");
     }
 
-    */
+
+*/
 /**
      * return the version of the library.
      *
      * @return String
      *//*
 
+
     public static String version() {
-        return VERSION;
     }
 
-    */
+
+*/
 /**
      *
      * reusable init esc code
      *
      *//*
 
+
     public void escInit(){
         mOutputStream.write(0x1B);
         mOutputStream.write("@");
     }
 
-    */
+
+*/
 /**
      * resets all mOutputStream settings to default
      *
      *//*
+*/
+/*
 
     public void resetToDefault(){
         setInverse(false);
@@ -117,12 +126,14 @@ public class ESCPos {
         setUnderline(0);
         setJustification(0);
     }
-    */
+
+*/
 /**
      *
      * @param txt
      *          String to print
      *//*
+
 
     public void printString(String str){
         //escInit();
@@ -141,10 +152,12 @@ public class ESCPos {
     public void printStorage(){
         mOutputStream.write(0xA);
     }
-    */
+
+*/
 /**
      * Prints n lines of blank paper.
      * *//*
+
 
     public void feed(int feed){
         //escInit();
@@ -153,10 +166,12 @@ public class ESCPos {
         mOutputStream.write(feed);
     }
 
-    */
+
+*/
 /**
      * Prints a string and outputs n lines of blank paper.
      * *//*
+
 
 
     public void printAndFeed(String str, int feed){
@@ -168,10 +183,12 @@ public class ESCPos {
         mOutputStream.write(feed);
     }
 
-    */
+
+*/
 /**
      * Sets bold
      * *//*
+
 
     public void setBold(Boolean bool){
         mOutputStream.write(0x1B);
@@ -179,10 +196,12 @@ public class ESCPos {
         mOutputStream.write((int)(bool?1:0));
     }
 
-    */
+
+*/
 /**
      * Sets white on black printing
      * *//*
+
 
     public void setInverse(Boolean bool){
         mOutputStream.write(0x1D);
@@ -190,7 +209,8 @@ public class ESCPos {
         mOutputStream.write( (int)(bool?1:0) );
     }
 
-    */
+
+*/
 /**
      * Sets underline and weight
      *
@@ -201,6 +221,7 @@ public class ESCPos {
      * *//*
 
 
+
     public void setUnderline(int val){
         mOutputStream.write(0x1B);
         mOutputStream.write("-");
@@ -208,7 +229,8 @@ public class ESCPos {
     }
 
 
-    */
+
+*/
 /**
      * Sets left, center, right justification
      *
@@ -219,13 +241,15 @@ public class ESCPos {
      * *//*
 
 
+
     public void setJustification(int val){
         mOutputStream.write(0x1B);
         mOutputStream.write("a");
         mOutputStream.write(val);
     }
 
-    */
+
+*/
 /**
      * Encode and print QR code
      *
@@ -243,6 +267,7 @@ public class ESCPos {
      *  		The QR code will not print if it is too big.
      *  		Try setting this low and experiment in making it larger.
      *//*
+
 
     public void printQR(String str, int errCorrect, int moduleSize){
         //save data function 80
@@ -283,7 +308,8 @@ public class ESCPos {
         mOutputStream.write(48); //m
     }
 
-    */
+
+*/
 /**
      * Encode and print barcode
      *
@@ -320,6 +346,7 @@ public class ESCPos {
      *  		3 = Both above and below barcode.
      *//*
 
+
     public void printBarcode(String code, int type, int h, int w, int font, int pos){
 
         //need to test for errors in length of code
@@ -354,7 +381,8 @@ public class ESCPos {
         mOutputStream.write(0);//print barcode
     }
 
-    */
+
+*/
 /**
      * Encode and print PDF 417 barcode
      *
@@ -379,6 +407,7 @@ public class ESCPos {
      *  		set error correction level 48 <= n <= 56 (0 - 8).
      *
      *//*
+
 
     public void printPSDCode(String code, int type, int h, int w, int cols, int rows, int error){
 
@@ -460,7 +489,8 @@ public class ESCPos {
     }
 
 
-    */
+
+*/
 /**
      * Store custom character
      * input array of column bytes
@@ -473,6 +503,7 @@ public class ESCPos {
      * 		32 - 24-dot single density.
      * 		33 - 24-dot double density.
      *//*
+
 
     public void storeCustomChar(int[] columnArray, int mode){
 
@@ -489,7 +520,8 @@ public class ESCPos {
 
     }
 
-    */
+
+*/
 /**
      * Store custom character
      * input array of column bytes.	NOT WORKING
@@ -497,6 +529,7 @@ public class ESCPos {
      * 		Integer representing Vertical motion of unit in inches. 0-255
      *
      *//*
+
 
     public void setLineSpacing(int spacing){
 
@@ -533,12 +566,14 @@ public class ESCPos {
     }
 
 
-    */
+
+*/
 /**
      *
      * Print a sample sheet
      *
      *//*
+
 
     public void printSampler(){
         //print samples of all functions here
@@ -575,6 +610,4 @@ public class ESCPos {
         printAndFeed("\n##name## ##version##\nby Joseph Bergen\nwww.josephbergen.com", 4);
         resetToDefault();
     }
-}
-
-*/
+}*/

@@ -26,19 +26,19 @@ public class Utilities {
 
     public static Bitmap getBitmapFromAsset(Context context, String filePath) {
         AssetManager assetManager = context.getAssets();
-
-        InputStream istr;
+        InputStream inputStream;
         Bitmap bitmap = null;
         try {
-            istr = assetManager.open(filePath);
-            bitmap = BitmapFactory.decodeStream(istr);
+            inputStream = assetManager.open(filePath);
+            bitmap = BitmapFactory.decodeStream(inputStream);
         } catch (IOException e) {
-            // handle exception
+            e.printStackTrace();
         }
 
         return bitmap;
     }
 
+    // Static method for checking device is connected to internet.
     public static boolean isConnectedToInternet(AppCompatActivity activity){
         ConnectivityManager cm = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -49,6 +49,7 @@ public class Utilities {
         return isConnected;
     }
 
+    // this method format Date string to human readable format (time span)
     public static String getTimeSpanStringFromDate(Context context, String dateString){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
@@ -61,6 +62,7 @@ public class Utilities {
         return null;
     }
 
+    // this method format Date string to human readable format (relative time span)
     public static String getRelativeTimeSpanStringFromDate(Context context, String dateString){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
@@ -73,6 +75,7 @@ public class Utilities {
         return null;
     }
 
+    // this method format Date string
     public static String formatDateTime(Context context, String dateString){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
@@ -85,6 +88,7 @@ public class Utilities {
         return null;
     }
 
+    // converts Date string to Time string, example 10:10 AM
     public static String getTimeStringFromDate(String dateString){
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat outputFormat = new SimpleDateFormat("h:mm a");
@@ -98,6 +102,7 @@ public class Utilities {
         return null;
     }
 
+    // return Intent for dial a phone
     public static Intent getDialIntent(String phoneNo) {
         String uri = "tel:" + phoneNo;
         Intent intent = new Intent(Intent.ACTION_DIAL);
